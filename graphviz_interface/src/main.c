@@ -184,7 +184,7 @@ int layout_graph(size_t buffer_len) {
             return 1;
         }
 
-        Agedge_t *e = agedge(g, head, tail, NULL, true);
+        Agedge_t *e = agedge(g, tail, head, NULL, true);
         if (!e) {
             ERROR("Failed to create edge");
             free_Graph(&input_graph);

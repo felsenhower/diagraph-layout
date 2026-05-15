@@ -18,7 +18,7 @@ struct Node {
 struct Edge {
 	string tail;
 	string head;
-	string name;
+	string? name;
 	Attribute attributes[];
 	Size? label;
 	Size? xlabel;
@@ -72,7 +72,7 @@ struct LayoutEdge {
 	ControlPoint points[];
 	string head;
 	string tail;
-	string name;
+	string? name;
 	LayoutLabel? label;
 	LayoutLabel? xlabel;
 	LayoutLabel? headlabel;

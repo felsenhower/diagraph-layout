@@ -211,7 +211,7 @@
   encode-string(value.at("name")) + encode-point(value.at("width")) + encode-point(value.at("height")) + encode-optional(value.at("xlabel", default: none), encode-Size)
 }
 #let encode-Edge(value) = {
-  encode-string(value.at("tail")) + encode-string(value.at("head")) + encode-string(value.at("name")) + encode-list(value.at("attributes"), encode-Attribute) + encode-optional(value.at("label", default: none), encode-Size) + encode-optional(value.at("xlabel", default: none), encode-Size) + encode-optional(value.at("headlabel", default: none), encode-Size) + encode-optional(value.at("taillabel", default: none), encode-Size)
+  encode-string(value.at("tail")) + encode-string(value.at("head")) + encode-optional(value.at("name", default: none), encode-string) + encode-list(value.at("attributes"), encode-Attribute) + encode-optional(value.at("label", default: none), encode-Size) + encode-optional(value.at("xlabel", default: none), encode-Size) + encode-optional(value.at("headlabel", default: none), encode-Size) + encode-optional(value.at("taillabel", default: none), encode-Size)
 }
 #let encode-GraphAttribute(value) = {
   encode-int(value.at("for_")) + encode-string(value.at("key")) + encode-string(value.at("value"))
@@ -278,7 +278,7 @@
   offset += size
   let (f_tail, size) = decode-string(bytes.slice(offset, bytes.len()))
   offset += size
-  let (f_name, size) = decode-string(bytes.slice(offset, bytes.len()))
+  let (f_name, size) = decode-optional(bytes.slice(offset, bytes.len()), decode-string)
   offset += size
   let (f_label, size) = decode-optional(bytes.slice(offset, bytes.len()), decode-LayoutLabel)
   offset += size

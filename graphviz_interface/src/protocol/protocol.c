@@ -140,6 +140,9 @@ void free_Edge(Edge *s) {
         free(s->head);
     }
     if (s->name) {
+    if (s->name[0]) {
+        free(s->name[0]);
+    }
         free(s->name);
     }
     for (size_t i = 0; i < s->attributes_len; i++) {
@@ -169,7 +172,14 @@ int decode_Edge(uint8_t *__input_buffer, size_t buffer_len, Edge *out, size_t *b
     (void)err;
     NEXT_STR(out->tail)
     NEXT_STR(out->head)
-    NEXT_STR(out->name)
+    bool has_name;
+    NEXT_CHAR(has_name)
+    if (has_name) {
+        out->name = malloc(sizeof(char*));
+    NEXT_STR(out->name[0])
+    } else {
+        out->name = NULL;
+    }
     NEXT_INT(out->attributes_len)
     if (out->attributes_len == 0) {
         out->attributes = NULL;
@@ -362,6 +372,9 @@ void free_LayoutEdge(LayoutEdge *s) {
         free(s->tail);
     }
     if (s->name) {
+    if (s->name[0]) {
+        free(s->name[0]);
+    }
         free(s->name);
     }
     if (s->label) {
@@ -382,7 +395,7 @@ void free_LayoutEdge(LayoutEdge *s) {
     }
 }
 size_t LayoutEdge_size(const void *s){
-	return TYPST_INT_SIZE + list_size(((LayoutEdge*)s)->points, ((LayoutEdge*)s)->points_len, ControlPoint_size, sizeof(*((LayoutEdge*)s)->points)) + string_size(((LayoutEdge*)s)->head) + string_size(((LayoutEdge*)s)->tail) + string_size(((LayoutEdge*)s)->name) + optional_size(((LayoutEdge*)s)->label, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->xlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->headlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->taillabel, LayoutLabel_size);
+	return TYPST_INT_SIZE + list_size(((LayoutEdge*)s)->points, ((LayoutEdge*)s)->points_len, ControlPoint_size, sizeof(*((LayoutEdge*)s)->points)) + string_size(((LayoutEdge*)s)->head) + string_size(((LayoutEdge*)s)->tail) + optional_size((void*)((LayoutEdge*)s)->name, string_size) + optional_size(((LayoutEdge*)s)->label, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->xlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->headlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->taillabel, LayoutLabel_size);
 }
 int encode_LayoutEdge(const LayoutEdge *s, uint8_t *__input_buffer, size_t *buffer_len, size_t *buffer_offset) {
     size_t __buffer_offset = 0;    size_t s_size = LayoutEdge_size(s);
@@ -399,7 +412,10 @@ int encode_LayoutEdge(const LayoutEdge *s, uint8_t *__input_buffer, size_t *buff
     }
     STR_PACK(s->head)
     STR_PACK(s->tail)
-    STR_PACK(s->name)
+    CHAR_PACK(s->name != NULL)
+    if (s->name) {
+    STR_PACK(s->name[0])
+    }
     CHAR_PACK(s->label != NULL)
     if (s->label) {
         if ((err = encode_LayoutLabel(&s->label[0], __input_buffer + __buffer_offset, buffer_len, &__buffer_offset))) {

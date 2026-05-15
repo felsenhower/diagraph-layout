@@ -132,7 +132,7 @@ void free_Node(Node *s);
 typedef struct Edge_t {
     char* tail;
     char* head;
-    char* name;
+    char* * name;
     struct Attribute_t * attributes;
     size_t attributes_len;
     struct Size_t * label;
@@ -186,7 +186,7 @@ typedef struct LayoutEdge_t {
     size_t points_len;
     char* head;
     char* tail;
-    char* name;
+    char* * name;
     struct LayoutLabel_t * label;
     struct LayoutLabel_t * xlabel;
     struct LayoutLabel_t * headlabel;

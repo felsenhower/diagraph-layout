@@ -211,7 +211,7 @@
   encode-string(value.at("name")) + encode-point(value.at("width")) + encode-point(value.at("height")) + encode-optional(value.at("xlabel", default: none), encode-Size)
 }
 #let encode-Edge(value) = {
-  encode-string(value.at("tail")) + encode-string(value.at("head")) + encode-optional(value.at("name", default: none), encode-string) + encode-list(value.at("attributes"), encode-Attribute) + encode-optional(value.at("label", default: none), encode-Size) + encode-optional(value.at("xlabel", default: none), encode-Size) + encode-optional(value.at("headlabel", default: none), encode-Size) + encode-optional(value.at("taillabel", default: none), encode-Size)
+  encode-string(value.at("tail")) + encode-string(value.at("head")) + encode-string(value.at("name")) + encode-list(value.at("attributes"), encode-Attribute) + encode-optional(value.at("label", default: none), encode-Size) + encode-optional(value.at("xlabel", default: none), encode-Size) + encode-optional(value.at("headlabel", default: none), encode-Size) + encode-optional(value.at("taillabel", default: none), encode-Size)
 }
 #let encode-GraphAttribute(value) = {
   encode-int(value.at("for_")) + encode-string(value.at("key")) + encode-string(value.at("value"))
@@ -278,7 +278,7 @@
   offset += size
   let (f_tail, size) = decode-string(bytes.slice(offset, bytes.len()))
   offset += size
-  let (f_name, size) = decode-optional(bytes.slice(offset, bytes.len()), decode-string)
+  let (f_name, size) = decode-string(bytes.slice(offset, bytes.len()))
   offset += size
   let (f_label, size) = decode-optional(bytes.slice(offset, bytes.len()), decode-LayoutLabel)
   offset += size
@@ -298,6 +298,17 @@
     headlabel: f_headlabel,
     taillabel: f_taillabel,
   ), offset)
+}
+#let decode-Engines(bytes) = {
+  let offset = 0
+  let (f_engines, size) = decode-list(bytes.slice(offset, bytes.len()), decode-string)
+  offset += size
+  ((
+    engines: f_engines,
+  ), offset)
+}
+#let encode-Graph(value) = {
+  encode-string(value.at("engine")) + encode-bool(value.at("directed")) + encode-list(value.at("edges"), encode-Edge) + encode-list(value.at("nodes"), encode-Node) + encode-list(value.at("attributes"), encode-GraphAttribute) + encode-list(value.at("subgraphs"), encode-SubGraph)
 }
 #let decode-Layout(bytes) = {
   let offset = 0
@@ -321,15 +332,4 @@
     nodes: f_nodes,
     edges: f_edges,
   ), offset)
-}
-#let decode-Engines(bytes) = {
-  let offset = 0
-  let (f_engines, size) = decode-list(bytes.slice(offset, bytes.len()), decode-string)
-  offset += size
-  ((
-    engines: f_engines,
-  ), offset)
-}
-#let encode-Graph(value) = {
-  encode-string(value.at("engine")) + encode-bool(value.at("directed")) + encode-list(value.at("edges"), encode-Edge) + encode-list(value.at("nodes"), encode-Node) + encode-list(value.at("attributes"), encode-GraphAttribute) + encode-list(value.at("subgraphs"), encode-SubGraph)
 }

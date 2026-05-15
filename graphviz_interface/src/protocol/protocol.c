@@ -139,6 +139,12 @@ void free_Edge(Edge *s) {
     if (s->head) {
         free(s->head);
     }
+    if (s->name) {
+    if (s->name[0]) {
+        free(s->name[0]);
+    }
+        free(s->name);
+    }
     for (size_t i = 0; i < s->attributes_len; i++) {
     free_Attribute(&s->attributes[i]);
     }
@@ -166,6 +172,14 @@ int decode_Edge(uint8_t *__input_buffer, size_t buffer_len, Edge *out, size_t *b
     (void)err;
     NEXT_STR(out->tail)
     NEXT_STR(out->head)
+    bool has_name;
+    NEXT_CHAR(has_name)
+    if (has_name) {
+        out->name = malloc(sizeof(char*));
+    NEXT_STR(out->name[0])
+    } else {
+        out->name = NULL;
+    }
     NEXT_INT(out->attributes_len)
     if (out->attributes_len == 0) {
         out->attributes = NULL;
@@ -357,6 +371,12 @@ void free_LayoutEdge(LayoutEdge *s) {
     if (s->tail) {
         free(s->tail);
     }
+    if (s->name) {
+    if (s->name[0]) {
+        free(s->name[0]);
+    }
+        free(s->name);
+    }
     if (s->label) {
     free_LayoutLabel(&s->label[0]);
         free(s->label);
@@ -375,7 +395,7 @@ void free_LayoutEdge(LayoutEdge *s) {
     }
 }
 size_t LayoutEdge_size(const void *s){
-	return TYPST_INT_SIZE + list_size(((LayoutEdge*)s)->points, ((LayoutEdge*)s)->points_len, ControlPoint_size, sizeof(*((LayoutEdge*)s)->points)) + string_size(((LayoutEdge*)s)->head) + string_size(((LayoutEdge*)s)->tail) + optional_size(((LayoutEdge*)s)->label, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->xlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->headlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->taillabel, LayoutLabel_size);
+	return TYPST_INT_SIZE + list_size(((LayoutEdge*)s)->points, ((LayoutEdge*)s)->points_len, ControlPoint_size, sizeof(*((LayoutEdge*)s)->points)) + string_size(((LayoutEdge*)s)->head) + string_size(((LayoutEdge*)s)->tail) + optional_size(((LayoutEdge*)s)->name, string_size) + optional_size(((LayoutEdge*)s)->label, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->xlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->headlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->taillabel, LayoutLabel_size);
 }
 int encode_LayoutEdge(const LayoutEdge *s, uint8_t *__input_buffer, size_t *buffer_len, size_t *buffer_offset) {
     size_t __buffer_offset = 0;    size_t s_size = LayoutEdge_size(s);
@@ -392,6 +412,10 @@ int encode_LayoutEdge(const LayoutEdge *s, uint8_t *__input_buffer, size_t *buff
     }
     STR_PACK(s->head)
     STR_PACK(s->tail)
+    CHAR_PACK(s->name != NULL)
+    if (s->name) {
+    STR_PACK(s->name[0])
+    }
     CHAR_PACK(s->label != NULL)
     if (s->label) {
         if ((err = encode_LayoutLabel(&s->label[0], __input_buffer + __buffer_offset, buffer_len, &__buffer_offset))) {
@@ -453,6 +477,30 @@ int encode_Layout(const Layout *s) {
         if ((err = encode_LayoutEdge(&s->edges[i], __input_buffer + __buffer_offset, &buffer_len, &__buffer_offset))) {
             return err;
         }
+    }
+
+    wasm_minimal_protocol_send_result_to_host(__input_buffer, buffer_len);
+    return 0;
+}
+void free_Engines(Engines *s) {
+    for (size_t i = 0; i < s->engines_len; i++) {
+    if (s->engines[i]) {
+        free(s->engines[i]);
+    }
+    }
+    free(s->engines);
+}
+size_t Engines_size(const void *s){
+	return TYPST_INT_SIZE + string_list_size(((Engines*)s)->engines, ((Engines*)s)->engines_len);
+}
+int encode_Engines(const Engines *s) {
+    size_t buffer_len = Engines_size(s);
+    INIT_BUFFER_PACK(buffer_len)
+    int err;
+	(void)err;
+    INT_PACK(s->engines_len)
+    for (size_t i = 0; i < s->engines_len; i++) {
+    STR_PACK(s->engines[i])
     }
 
     wasm_minimal_protocol_send_result_to_host(__input_buffer, buffer_len);
@@ -534,29 +582,5 @@ int decode_Graph(size_t buffer_len, Graph *out) {
         }
     }
     FREE_BUFFER()
-    return 0;
-}
-void free_Engines(Engines *s) {
-    for (size_t i = 0; i < s->engines_len; i++) {
-    if (s->engines[i]) {
-        free(s->engines[i]);
-    }
-    }
-    free(s->engines);
-}
-size_t Engines_size(const void *s){
-	return TYPST_INT_SIZE + string_list_size(((Engines*)s)->engines, ((Engines*)s)->engines_len);
-}
-int encode_Engines(const Engines *s) {
-    size_t buffer_len = Engines_size(s);
-    INIT_BUFFER_PACK(buffer_len)
-    int err;
-	(void)err;
-    INT_PACK(s->engines_len)
-    for (size_t i = 0; i < s->engines_len; i++) {
-    STR_PACK(s->engines[i])
-    }
-
-    wasm_minimal_protocol_send_result_to_host(__input_buffer, buffer_len);
     return 0;
 }

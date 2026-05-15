@@ -20,6 +20,7 @@ diagraph.wasm: $(SOURCES) $(INSTALLDIR)/lib/libexpat.a $(INSTALLDIR)/lib/graphvi
 	mv ./"diagraph - stubbed.wasm" ./diagraph.wasm
 
 protocol src/protocol/protocol.c src/protocol/protocol.h: diagraph.prot
+	# Install wasmpg from https://github.com/Robotechnic/WebAssembly-protocol-generator
 	wasmpg diagraph.prot -t . -c src/protocol
 
 format:

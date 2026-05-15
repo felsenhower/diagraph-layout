@@ -395,7 +395,7 @@ void free_LayoutEdge(LayoutEdge *s) {
     }
 }
 size_t LayoutEdge_size(const void *s){
-	return TYPST_INT_SIZE + list_size(((LayoutEdge*)s)->points, ((LayoutEdge*)s)->points_len, ControlPoint_size, sizeof(*((LayoutEdge*)s)->points)) + string_size(((LayoutEdge*)s)->head) + string_size(((LayoutEdge*)s)->tail) + optional_size((void*)((LayoutEdge*)s)->name, string_size) + optional_size(((LayoutEdge*)s)->label, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->xlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->headlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->taillabel, LayoutLabel_size);
+	return TYPST_INT_SIZE + list_size(((LayoutEdge*)s)->points, ((LayoutEdge*)s)->points_len, ControlPoint_size, sizeof(*((LayoutEdge*)s)->points)) + string_size(((LayoutEdge*)s)->head) + string_size(((LayoutEdge*)s)->tail) + optional_size(((LayoutEdge*)s)->name[0], string_size) + optional_size(((LayoutEdge*)s)->label, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->xlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->headlabel, LayoutLabel_size) + optional_size(((LayoutEdge*)s)->taillabel, LayoutLabel_size);
 }
 int encode_LayoutEdge(const LayoutEdge *s, uint8_t *__input_buffer, size_t *buffer_len, size_t *buffer_offset) {
     size_t __buffer_offset = 0;    size_t s_size = LayoutEdge_size(s);
@@ -463,6 +463,44 @@ int encode_Engines(const Engines *s) {
     INT_PACK(s->engines_len)
     for (size_t i = 0; i < s->engines_len; i++) {
     STR_PACK(s->engines[i])
+    }
+
+    wasm_minimal_protocol_send_result_to_host(__input_buffer, buffer_len);
+    return 0;
+}
+void free_Layout(Layout *s) {
+    for (size_t i = 0; i < s->nodes_len; i++) {
+    free_LayoutNode(&s->nodes[i]);
+    }
+    free(s->nodes);
+    for (size_t i = 0; i < s->edges_len; i++) {
+    free_LayoutEdge(&s->edges[i]);
+    }
+    free(s->edges);
+}
+size_t Layout_size(const void *s){
+	return 1 + TYPST_INT_SIZE + TYPST_INT_SIZE + TYPST_INT_SIZE + TYPST_INT_SIZE + list_size(((Layout*)s)->nodes, ((Layout*)s)->nodes_len, LayoutNode_size, sizeof(*((Layout*)s)->nodes)) + TYPST_INT_SIZE + list_size(((Layout*)s)->edges, ((Layout*)s)->edges_len, LayoutEdge_size, sizeof(*((Layout*)s)->edges));
+}
+int encode_Layout(const Layout *s) {
+    size_t buffer_len = Layout_size(s);
+    INIT_BUFFER_PACK(buffer_len)
+    int err;
+	(void)err;
+    CHAR_PACK(s->errored)
+    FLOAT_PACK(s->scale)
+    FLOAT_PACK(s->width)
+    FLOAT_PACK(s->height)
+    INT_PACK(s->nodes_len)
+    for (size_t i = 0; i < s->nodes_len; i++) {
+        if ((err = encode_LayoutNode(&s->nodes[i], __input_buffer + __buffer_offset, &buffer_len, &__buffer_offset))) {
+            return err;
+        }
+    }
+    INT_PACK(s->edges_len)
+    for (size_t i = 0; i < s->edges_len; i++) {
+        if ((err = encode_LayoutEdge(&s->edges[i], __input_buffer + __buffer_offset, &buffer_len, &__buffer_offset))) {
+            return err;
+        }
     }
 
     wasm_minimal_protocol_send_result_to_host(__input_buffer, buffer_len);
@@ -544,43 +582,5 @@ int decode_Graph(size_t buffer_len, Graph *out) {
         }
     }
     FREE_BUFFER()
-    return 0;
-}
-void free_Layout(Layout *s) {
-    for (size_t i = 0; i < s->nodes_len; i++) {
-    free_LayoutNode(&s->nodes[i]);
-    }
-    free(s->nodes);
-    for (size_t i = 0; i < s->edges_len; i++) {
-    free_LayoutEdge(&s->edges[i]);
-    }
-    free(s->edges);
-}
-size_t Layout_size(const void *s){
-	return 1 + TYPST_INT_SIZE + TYPST_INT_SIZE + TYPST_INT_SIZE + TYPST_INT_SIZE + list_size(((Layout*)s)->nodes, ((Layout*)s)->nodes_len, LayoutNode_size, sizeof(*((Layout*)s)->nodes)) + TYPST_INT_SIZE + list_size(((Layout*)s)->edges, ((Layout*)s)->edges_len, LayoutEdge_size, sizeof(*((Layout*)s)->edges));
-}
-int encode_Layout(const Layout *s) {
-    size_t buffer_len = Layout_size(s);
-    INIT_BUFFER_PACK(buffer_len)
-    int err;
-	(void)err;
-    CHAR_PACK(s->errored)
-    FLOAT_PACK(s->scale)
-    FLOAT_PACK(s->width)
-    FLOAT_PACK(s->height)
-    INT_PACK(s->nodes_len)
-    for (size_t i = 0; i < s->nodes_len; i++) {
-        if ((err = encode_LayoutNode(&s->nodes[i], __input_buffer + __buffer_offset, &buffer_len, &__buffer_offset))) {
-            return err;
-        }
-    }
-    INT_PACK(s->edges_len)
-    for (size_t i = 0; i < s->edges_len; i++) {
-        if ((err = encode_LayoutEdge(&s->edges[i], __input_buffer + __buffer_offset, &buffer_len, &__buffer_offset))) {
-            return err;
-        }
-    }
-
-    wasm_minimal_protocol_send_result_to_host(__input_buffer, buffer_len);
     return 0;
 }

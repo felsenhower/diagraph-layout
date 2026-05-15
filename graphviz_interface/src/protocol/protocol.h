@@ -201,6 +201,19 @@ typedef struct Engines_t {
 void free_Engines(Engines *s);
 int encode_Engines(const Engines *s);
 
+typedef struct Layout_t {
+    bool errored;
+    float scale;
+    float width;
+    float height;
+    struct LayoutNode_t * nodes;
+    size_t nodes_len;
+    struct LayoutEdge_t * edges;
+    size_t edges_len;
+} Layout;
+void free_Layout(Layout *s);
+int encode_Layout(const Layout *s);
+
 typedef struct Graph_t {
     char* engine;
     bool directed;
@@ -215,18 +228,5 @@ typedef struct Graph_t {
 } Graph;
 void free_Graph(Graph *s);
 int decode_Graph(size_t buffer_len, Graph *out);
-
-typedef struct Layout_t {
-    bool errored;
-    float scale;
-    float width;
-    float height;
-    struct LayoutNode_t * nodes;
-    size_t nodes_len;
-    struct LayoutEdge_t * edges;
-    size_t edges_len;
-} Layout;
-void free_Layout(Layout *s);
-int encode_Layout(const Layout *s);
 
 #endif

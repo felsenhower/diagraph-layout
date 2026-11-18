@@ -132,6 +132,7 @@ void free_Node(Node *s);
 typedef struct Edge_t {
     char* tail;
     char* head;
+    char* * name;
     struct Attribute_t * attributes;
     size_t attributes_len;
     struct Size_t * label;
@@ -185,12 +186,20 @@ typedef struct LayoutEdge_t {
     size_t points_len;
     char* head;
     char* tail;
+    char* * name;
     struct LayoutLabel_t * label;
     struct LayoutLabel_t * xlabel;
     struct LayoutLabel_t * headlabel;
     struct LayoutLabel_t * taillabel;
 } LayoutEdge;
 void free_LayoutEdge(LayoutEdge *s);
+
+typedef struct Engines_t {
+    char* * engines;
+    size_t engines_len;
+} Engines;
+void free_Engines(Engines *s);
+int encode_Engines(const Engines *s);
 
 typedef struct Layout_t {
     bool errored;
@@ -219,12 +228,5 @@ typedef struct Graph_t {
 } Graph;
 void free_Graph(Graph *s);
 int decode_Graph(size_t buffer_len, Graph *out);
-
-typedef struct Engines_t {
-    char* * engines;
-    size_t engines_len;
-} Engines;
-void free_Engines(Engines *s);
-int encode_Engines(const Engines *s);
 
 #endif

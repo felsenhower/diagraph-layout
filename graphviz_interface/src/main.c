@@ -177,14 +177,18 @@ int layout_graph(size_t buffer_len) {
     for (int i = 0; i < input_graph.edges_len; i++) {
         Agnode_t *tail = agnode(g, input_graph.edges[i].tail, false);
         Agnode_t *head = agnode(g, input_graph.edges[i].head, false);
+        
         if (!tail || !head) {
             ERROR("Failed to find node for edge");
             free_Graph(&input_graph);
             agclose(g);
             return 1;
         }
+        
+        char **raw_name = input_graph.edges[i].name;
+        char *name = raw_name ? *raw_name : NULL;
 
-        Agedge_t *e = agedge(g, tail, head, NULL, true);
+        Agedge_t *e = agedge(g, tail, head, name, true);
         if (!e) {
             ERROR("Failed to create edge");
             free_Graph(&input_graph);
@@ -316,6 +320,31 @@ int layout_graph(size_t buffer_len) {
             strcpy(layout.edges[edges_index].head, head_name);
 
             DEBUG("Edge from %s to %s\n", layout.edges[edges_index].tail, layout.edges[edges_index].head);
+
+            const char *edge_name = agnameof(e);
+            if (edge_name) {
+                layout.edges[edges_index].name = malloc(sizeof(char *));
+                if (!layout.edges[edges_index].name) {
+                    ERROR("Failed to allocate memory for edge name");
+                    free_Layout(&layout);
+                    gvFreeLayout(gvc, g);
+                    agclose(g);
+                    gvFreeContext(gvc);
+                    return 1;
+                }
+                layout.edges[edges_index].name[0] = malloc(strlen(edge_name) + 1);
+                if (!layout.edges[edges_index].name[0]) {
+                    ERROR("Failed to allocate memory for edge name");
+                    free_Layout(&layout);
+                    gvFreeLayout(gvc, g);
+                    agclose(g);
+                    gvFreeContext(gvc);
+                    return 1;
+                }
+                strcpy(layout.edges[edges_index].name[0], edge_name);
+            } else {
+                layout.edges[edges_index].name = NULL;
+            }
 
             splines *es = ED_spl(e);
             size_t points_len = 0;

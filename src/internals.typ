@@ -29,7 +29,7 @@
   )
 }
 
-#let edge(tail, head, label: none, xlabel: none, taillabel: none, headlabel: none, ..args) = {
+#let edge(tail, head, name: none, label: none, xlabel: none, taillabel: none, headlabel: none, ..args) = {
   if args.pos().len() > 0 {
     panic("Too many arguments for edge: " + tail + " -> " + head)
   }
@@ -61,6 +61,7 @@
     type: "edge",
     head: head,
     tail: tail,
+    name: name,
     label: label,
     xlabel: xlabel,
     taillabel: taillabel,
@@ -138,6 +139,7 @@
       input.edges.push((
         tail: item.tail,
         head: item.head,
+        name: item.name,
         label: item.label,
         xlabel: item.xlabel,
         taillabel: item.taillabel,

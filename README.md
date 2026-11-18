@@ -51,10 +51,10 @@ Defines a new node with the given name. `width` and `height` define the size of 
 ### edge
 
 ```typ
-#let edge(tail, head, label: none, xlabel: none, taillabel: none, headlabel: none, ..args)
+#let edge(tail, head, name: none, label: none, xlabel: none, taillabel: none, headlabel: none, ..args)
 ```
 
-Defines a new edge between the nodes `tail` and `head`. The `label`, `xlabel`, `taillabel` and `headlabel` arguments are optional labels for the edge. They take a `dict` with the keys `width` and `height` in points. The rest of the arguments are the edge attributes in the form of named arguments. See [here](https://graphviz.org/docs/edges/) for a list of supported attributes.
+Defines a new edge between the nodes `tail` and `head`. The optional `name` argument can be used if you want to be able to identify an edge in the resulting layout. The `label`, `xlabel`, `taillabel` and `headlabel` arguments are optional labels for the edge. They take a `dict` with the keys `width` and `height` in points. The rest of the arguments are the edge attributes in the form of named arguments. See [here](https://graphviz.org/docs/edges/) for a list of supported attributes.
 
 > [!NOTE]
 > Only the arguments that have an influence on the layout are supported. For example, the `color` won't have any effect as it does not influence the layout.
@@ -103,6 +103,7 @@ This function is made to be used as a separated context for attributes. For inst
         (
             "head": str,
             "tail": str,
+            "name": str,
             "points": (
                 ("x": length, "y": length),
             ),

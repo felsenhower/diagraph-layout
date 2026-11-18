@@ -7,7 +7,7 @@ SOURCES=src/main.c $(wildcard src/*/*.c)
 INSTALLDIR=$(shell pwd)/install
 SRCDIR=$(shell pwd)/graphiz-src
 EPSRCDIR=$(shell pwd)/expat-src
-CFLAGS = -O2 --no-entry -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFILESYSTEM=0 -sASSERTIONS=0 -sEXPORT_KEEPALIVE=1 -Wall -Wno-logical-op-parentheses
+CFLAGS = -O2 --no-entry -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFILESYSTEM=0 -sASSERTIONS=0 -sEXPORT_KEEPALIVE=1 -Wall -Wno-logical-op-parentheses -sDEFAULT_TO_CXX
 INCLUDE_FLAGS = -I"src" -I"$(INSTALLDIR)/include" -I"$(INSTALLDIR)/include/graphviz" -L"$(INSTALLDIR)/lib" -L"$(INSTALLDIR)/lib/graphviz" -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_core -lgvc -lpathplan -lcgraph -lxdot -lcdt -lexpat -lm
 GRAPHVIZ_INFO_INCLUDE=-include "$(SRCDIR)/graphviz_version.h"
 INCLUDE_FLAGS += $(GRAPHVIZ_INFO_INCLUDE)
@@ -43,7 +43,7 @@ $(INSTALLDIR)/lib/graphviz: $(SRCDIR) $(INSTALLDIR) $(SRCDIR)/Makefile
 $(SRCDIR)/Makefile: | $(SRCDIR) $(INSTALLDIR) $(INSTALLDIR)/lib/libexpat.a 
 	cd $(SRCDIR) \
 	&& emconfigure ./configure --host=wasm32 --disable-ltdl \
-		--prefix="$(INSTALLDIR)" EXPAT_CFLAGS="-I$(INSTALLDIR)/include" EXPAT_LIBS="-L$(INSTALLDIR)/lib -lexpat" CFLAGS="-Oz" CXXFLAGS="-Oz"
+		--prefix="$(INSTALLDIR)" EXPAT_CFLAGS="-I$(INSTALLDIR)/include" EXPAT_LIBS="-L$(INSTALLDIR)/lib -lexpat" CFLAGS="-Oz" CXXFLAGS="-Oz" \
 		--enable-swig=no --enable-sharp=no --enable-go=no \
 		--enable-ocaml=no --enable-perl=no --enable-php=no \
 		--enable-python=no --enable-r=no --enable-ruby=no \

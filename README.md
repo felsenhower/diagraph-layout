@@ -1,5 +1,19 @@
 # diagraph-layout
 
+---
+
+This is a fork of [diagraph-layout](https://github.com/Robotechnic/diagraph-layout) that fixes some issues.
+
+How to build:
+
+- Install emscripten
+- Add `source /etc/profile.d/emscripten.sh` to `.zshrc`
+- Install wasi-stub via `cargo install wasi-stub`
+- Install WebAssembly-protocol-generator via `cargo install --git https://github.com/Robotechnic/WebAssembly-protocol-generator.git`
+- Run `make wasm`
+
+---
+
 A layout engine for directed graphs that uses graphviz algorithms.
 
 > [!NOTE] 

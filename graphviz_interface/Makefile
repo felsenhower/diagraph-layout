@@ -47,7 +47,7 @@ $(SRCDIR)/Makefile: | $(SRCDIR) $(INSTALLDIR) $(INSTALLDIR)/lib/libexpat.a
 		--enable-swig=no --enable-sharp=no --enable-go=no \
 		--enable-ocaml=no --enable-perl=no --enable-php=no \
 		--enable-python=no --enable-r=no --enable-ruby=no \
-		--disable-man-pdfs --disable-guile --diable-java \
+		--disable-man-pdfs --disable-guile \
 		--disable-tcl
 
 $(INSTALLDIR)/lib/libexpat.a: $(EPSRCDIR) $(INSTALLDIR) | $(EPSRCDIR)/Makefile

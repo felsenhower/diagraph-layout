@@ -29,33 +29,33 @@
   )
 }
 
-#let edge(head, tail, label: none, xlabel: none, taillabel: none, headlabel: none, ..args) = {
+#let edge(tail, head, label: none, xlabel: none, taillabel: none, headlabel: none, ..args) = {
   if args.pos().len() > 0 {
-    panic("Too many arguments for edge: " + head + " -> " + tail)
+    panic("Too many arguments for edge: " + tail + " -> " + head)
   }
   if xlabel != none and type(xlabel) != dictionary {
-    panic("Edge xlabel must be none or a dictionary: " + head + " -> " + tail)
+    panic("Edge xlabel must be none or a dictionary: " + tail + " -> " + head)
   }
   if xlabel != none and (not "width" in xlabel or not "height" in xlabel) {
-    panic("Edge xlabel dictionary must contain width and height keys: " + head + " -> " + tail)
+    panic("Edge xlabel dictionary must contain width and height keys: " + tail + " -> " + head)
   }
   if label != none and type(label) != dictionary {
-    panic("Edge label must be none or a dictionary: " + head + " -> " + tail)
+    panic("Edge label must be none or a dictionary: " + tail + " -> " + head)
   }
   if label != none and (not "width" in label or not "height" in label) {
-    panic("Edge label dictionary must contain width and height keys: " + head + " -> " + tail)
+    panic("Edge label dictionary must contain width and height keys: " + tail + " -> " + head)
   }
   if taillabel != none and type(taillabel) != dictionary {
-    panic("Edge taillabel must be none or a dictionary: " + head + " -> " + tail)
+    panic("Edge taillabel must be none or a dictionary: " + tail + " -> " + head)
   }
   if taillabel != none and (not "width" in taillabel or not "height" in taillabel) {
-    panic("Edge taillabel dictionary must contain width and height keys: " + head + " -> " + tail)
+    panic("Edge taillabel dictionary must contain width and height keys: " + tail + " -> " + head)
   }
   if headlabel != none and type(headlabel) != dictionary {
-    panic("Edge headlabel must be none or a dictionary: " + head + " -> " + tail)
+    panic("Edge headlabel must be none or a dictionary: " + tail + " -> " + head)
   }
   if headlabel != none and (not "width" in headlabel or not "height" in headlabel) {
-    panic("Edge headlabel dictionary must contain width and height keys: " + head + " -> " + tail)
+    panic("Edge headlabel dictionary must contain width and height keys: " + tail + " -> " + head)
   }
   (
     type: "edge",
